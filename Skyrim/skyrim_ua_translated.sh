@@ -51,7 +51,7 @@ if ! command -v unzip &> /dev/null; then
 fi
 
 # Вказаний Google Drive File ID
-file_id="1-_fGZxasDvUET2SoOKLi6wZ0RfcE9ZM0"
+file_id="1lj-oLVZyk9xLgXGZOYftdPhBHgYgXWZQ"
 
 # Формування посилання для завантаження
 file_url="https://drive.google.com/uc?export=download&id=$file_id"
