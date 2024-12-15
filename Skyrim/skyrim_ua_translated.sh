@@ -39,15 +39,13 @@ if ! check_and_change_directory "$primary_path"; then
 fi
 
 # Перевірка, чи встановлено wget
-if ! command -v wget &> /dev/null
-then
+if ! command -v wget &> /dev/null; then
     echo "wget не встановлено. Встановіть його за допомогою менеджера пакетів вашої системи."
     exit 1
 fi
 
 # Перевірка, чи встановлено unzip
-if ! command -v unzip &> /dev/null
-then
+if ! command -v unzip &> /dev/null; then
     echo "unzip не встановлено. Встановіть його за допомогою менеджера пакетів вашої системи."
     exit 1
 fi
@@ -73,20 +71,34 @@ if [ $? -eq 0 ]; then
     echo "Отримання списку файлів із архіву..."
     file_list=$(unzip -Z1 "$output_file")
 
-    # Створення папки !Backup, якщо її немає
-    if [ ! -d "!Backup" ]; then
-        echo "Створення папки !Backup для резервного копіювання..."
-        mkdir "!Backup"
-    fi
-
-    # Перевірка існування файлів у поточній папці та копіювання збігів до !Backup
-    echo "Копіювання файлів, що збігаються з архівом, до папки !Backup..."
+    # Перевірка конфліктних файлів
+    conflict_found=false
     for file in $file_list; do
         if [ -e "$file" ]; then
-            echo "Файл $file вже існує. Копіювання до папки !Backup..."
-            cp -p "$file" "!Backup/"
+            echo "Конфліктний файл знайдено: $file"
+            conflict_found=true
+            break
         fi
     done
+
+    # Якщо є конфліктні файли, створюємо папку !Backup
+    if [ "$conflict_found" = true ]; then
+        echo "Конфліктні файли виявлено. Створення папки !Backup для резервного копіювання..."
+        mkdir -p "!Backup"
+
+        # Копіюємо конфліктні файли до папки !Backup зі збереженням структури
+        echo "Копіювання конфліктних файлів до папки !Backup зі збереженням структури..."
+        for file in $file_list; do
+            if [ -e "$file" ]; then
+                backup_dir="!Backup/$(dirname "$file")"
+                mkdir -p "$backup_dir"
+                cp -p "$file" "$backup_dir/"
+                echo "Файл $file скопійовано до !Backup/$backup_dir"
+            fi
+        done
+    else
+        echo "Конфліктні файли не знайдено. Папка !Backup не створюється."
+    fi
 
     # Розпаковування архіву із перезаписом файлів
     echo "Розпаковування файлів із заміною існуючих..."
