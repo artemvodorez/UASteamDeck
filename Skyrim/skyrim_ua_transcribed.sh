@@ -53,7 +53,7 @@ then
 fi
 
 # Вказаний Google Drive File ID
-file_id="13-8DjeqUSzXZKt_2N0HIMz51kgjw3q-3"
+file_id="18R5_37BjV7HjBMitolTvDs4bGkUwccYR"
 
 # Формування посилання для завантаження
 file_url="https://drive.google.com/uc?export=download&id=$file_id"
